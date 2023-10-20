@@ -59,8 +59,6 @@ def generate_parking_lot_image(data):
     parking_lot_width = 40
     parking_lot_height = 80
     spacing = 10
-    num_rows = 2
-    num_lots_per_row = 7  # Adjust this based on the number of lots per row
 
     # Process the parking lot data and draw circles with colors
     if "slots" in data:
