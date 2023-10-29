@@ -2,14 +2,20 @@ import os
 from dotenv import load_dotenv
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
-import threading
-import time
 from generate_image import generate_image  # Assuming this is your image generation script
+import asyncio
+import websockets
 
 load_dotenv()
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
+API_TOKEN = os.getenv("ACCESS_TOKEN_SECRET")
 
+
+async def listen_for_updates():
+    async with websockets.connect(f'ws://localhost:3000?token={API_TOKEN}') as ws:
+        while True:
+            generate_image(await ws.recv())  # Generate the .jpg file
 
 # Function to send the .jpg file
 async def send_image(update, context):
@@ -31,11 +37,7 @@ async def send_image(update, context):
     except FileNotFoundError:
         await context.bot.send_message(chat_id=chat_id, text="The image file is not available.", reply_markup=keyboard)
 
-# Function to schedule the code every two minutes
-def schedule_code():
-    while True:
-        generate_image()  # Generate the .jpg file
-        time.sleep(60)  # Sleep for 2 minutes before generating again
+
 
 # Define the callback query handler for the START button
 async def start_button_callback(update, context):
@@ -48,13 +50,12 @@ app = Application.builder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler('start', send_image))
 app.add_handler(CallbackQueryHandler(start_button_callback, pattern='^start$'))
 
-# Create a separate thread for scheduling the code
-schedule_thread = threading.Thread(target=schedule_code)
-schedule_thread.daemon = True
-schedule_thread.start()
+
 
 if __name__ == '__main__':
+     # Create a task to listen for updates
+    asyncio.run(listen_for_updates())
+
     # Start the bot
     app.run_polling(1.0)
-    # Run the scheduling thread in the background
-    schedule_thread.join()
+   
