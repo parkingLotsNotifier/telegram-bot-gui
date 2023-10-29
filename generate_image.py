@@ -59,7 +59,7 @@ def generate_parking_lot_image(data):
     parking_lot_width = 40
     parking_lot_height = 80
     spacing = 10
-
+   
     # Process the parking lot data and draw circles with colors
     if "slots" in data:
         slots = data["slots"]
@@ -68,7 +68,6 @@ def generate_parking_lot_image(data):
             lot_name = slot["lot_name"]
             row = 1 if lot_name[0] == "A" else 2
             col = int(lot_name[1:])
-
             x1 = (col - 1) * (parking_lot_width + spacing)
             y1 = (row - 1) * (parking_lot_height + spacing)
             x2 = x1 + parking_lot_width
@@ -95,10 +94,12 @@ def generate_image():
     # Make a request to your API to get the JSON data
     api_url = API_ADDR
     response = requests.get(api_url)
-
+    # print(response.status_code)
     if response.status_code == 200:
         data = response.json()
-        generate_parking_lot_image(data)
+       # print("guy")
+        generate_parking_lot_image(data["fullDocument"])
+       # print("shai")
     else:
         print("Failed to retrieve data from the API.")
 
