@@ -5,17 +5,25 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from generate_image import generate_image  # Assuming this is your image generation script
 import asyncio
 import websockets
+import nest_asyncio
+import threading
 
 load_dotenv()
+nest_asyncio.apply()
 
 BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
 API_TOKEN = os.getenv("ACCESS_TOKEN_SECRET")
-
 
 async def listen_for_updates():
     async with websockets.connect(f'ws://localhost:3000?token={API_TOKEN}') as ws:
         while True:
             generate_image(await ws.recv())  # Generate the .jpg file
+
+def start_socket_listener():
+    asyncio.run(listen_for_updates())
+
+# Create a new thread for the socket listener
+socket_listener_thread = threading.Thread(target=start_socket_listener)
 
 # Function to send the .jpg file
 async def send_image(update, context):
@@ -52,10 +60,18 @@ app.add_handler(CallbackQueryHandler(start_button_callback, pattern='^start$'))
 
 
 
-if __name__ == '__main__':
-     # Create a task to listen for updates
-    asyncio.run(listen_for_updates())
 
-    # Start the bot
+if __name__ == '__main__':
+    # Start the socket listener thread
+    socket_listener_thread.start()
+
+    # Start the bot polling in the main thread's event loop
     app.run_polling(1.0)
+
+    # Optionally, wait for the socket listener thread to finish
+    socket_listener_thread.join()
+
+    
+    
+  
    

@@ -9,16 +9,13 @@ load_dotenv()
 API_ADDR = os.getenv("API_ADDR")
 API_TOKEN = os.getenv("ACCESS_TOKEN_SECRET")
 
-
 def create_blank_image(width, height, background_color):
     return Image.new("RGB", (width, height), background_color)
-
 
 def draw_rectangle(draw, x1, y1, x2, y2, outline_color, width, fill_color):
     draw.rectangle(
         [x1, y1, x2, y2], outline=outline_color, width=width, fill=fill_color
     )
-
 
 def draw_circle_with_text(
     draw, x, y, text, color, parking_lot_width, parking_lot_height
@@ -34,9 +31,17 @@ def draw_circle_with_text(
         fill=color,  # Circle fill color
     )
 
+    # Check if the "Arial.ttf" font file is available, else fall back to a default font
+    try:
+        font = ImageFont.truetype("Arial.ttf", 10)
+    except IOError:
+        font = ImageFont.load_default()
+
+    # Get the bounding box of the text
+    bbox = font.getbbox(text)
+    text_width, text_height = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    
     # Calculate text position to center it in the circle
-    font = ImageFont.truetype("Arial.ttf", 10)  # Updated to use load_default instead of truetype
-    text_width, text_height = font.getsize(text)
     text_position = (
         circle_center[0] - text_width // 2,
         circle_center[1] - text_height // 2,

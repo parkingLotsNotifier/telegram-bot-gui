@@ -4,14 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pillow = "*"
-requests = "*"
 python-dotenv = "*"
 python-telegram-bot = "*"
-websockets = "*"
+requests = "*"
+websocket = "*"
 asyncio = "*"
+websockets = "*"
+pillow = "*"
+nest-asyncio = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.12"
+python_full_version = "3.12.0"
