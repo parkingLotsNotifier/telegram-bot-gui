@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
-from generate_image import generate_image  # Assuming this is your image generation script
+from ui import generate_image  # Assuming this is your image generation script
 import asyncio
 import websockets
 import nest_asyncio
@@ -17,6 +17,7 @@ API_TOKEN = os.getenv("ACCESS_TOKEN_SECRET")
 async def listen_for_updates():
     async with websockets.connect(f'ws://localhost:3000?token={API_TOKEN}') as ws:
         while True:
+            
             generate_image(await ws.recv())  # Generate the .jpg file
 
 def start_socket_listener():
@@ -39,7 +40,7 @@ async def send_image(update, context):
     keyboard = InlineKeyboardMarkup([[start_button]])
 
     try:
-        with open("parking_lots.jpg", "rb") as image_file:
+        with open("background_image.png", "rb") as image_file:
             # Send the photo along with the START button
             await context.bot.send_photo(chat_id=chat_id, photo=image_file, reply_markup=keyboard)
     except FileNotFoundError:

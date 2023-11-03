@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>387459</id>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2023-11-02 01:49:52.658495+00:00</created>
+      <updated>2023-11-02 01:57:38.265880+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>387799</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>https://app.cvat.ai/api/jobs/387459</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>shai5</username>
+        <email>shaishillo@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>A1</name>
+          <color>#8aacd8</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>A2</name>
+          <color>#e1e05f</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>A3</name>
+          <color>#65897c</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>A4</name>
+          <color>#ca746d</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>A5</name>
+          <color>#4cd7cc</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>A6</name>
+          <color>#8d17d1</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>A7</name>
+          <color>#d1ed0c</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>A8</name>
+          <color>#ef23d9</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B1</name>
+          <color>#114771</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B2</name>
+          <color>#14bfb2</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B3</name>
+          <color>#adf213</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B4</name>
+          <color>#04cc07</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B5</name>
+          <color>#31012a</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B6</name>
+          <color>#1efd38</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B7</name>
+          <color>#90a0ff</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B8</name>
+          <color>#18dbab</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B9</name>
+          <color>#12f86b</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>B10</name>
+          <color>#8ebc66</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2023-11-02 16:10:45.554723+00:00</dumped>
+  </meta>
+  <image id="0" name="working-bg.png" width="1280" height="744">
+    <points label="A1" source="manual" occluded="0" points="115.89,530.28" z_order="0">
+    </points>
+    <points label="A2" source="manual" occluded="0" points="232.85,496.86" z_order="0">
+    </points>
+    <points label="A3" source="manual" occluded="0" points="447.50,415.90" z_order="0">
+    </points>
+    <points label="A4" source="manual" occluded="0" points="544.20,382.50" z_order="0">
+    </points>
+    <points label="A5" source="manual" occluded="0" points="645.30,345.60" z_order="0">
+    </points>
+    <points label="A6" source="manual" occluded="0" points="740.30,308.60" z_order="0">
+    </points>
+    <points label="A7" source="manual" occluded="0" points="829.99,273.48" z_order="0">
+    </points>
+    <points label="A8" source="manual" occluded="0" points="1006.75,203.13" z_order="0">
+    </points>
+    <points label="B1" source="manual" occluded="0" points="187.10,561.10" z_order="0">
+    </points>
+    <points label="B2" source="manual" occluded="0" points="304.10,518.00" z_order="0">
+    </points>
+    <points label="B3" source="manual" occluded="0" points="417.50,475.80" z_order="0">
+    </points>
+    <points label="B4" source="manual" occluded="0" points="516.00,442.30" z_order="0">
+    </points>
+    <points label="B5" source="manual" occluded="0" points="617.20,406.20" z_order="0">
+    </points>
+    <points label="B6" source="manual" occluded="0" points="809.80,323.70" z_order="0">
+    </points>
+    <points label="B7" source="manual" occluded="0" points="900.30,291.10" z_order="0">
+    </points>
+    <points label="B8" source="manual" occluded="0" points="987.40,257.70" z_order="0">
+    </points>
+    <points label="B9" source="manual" occluded="0" points="1071.83,225.11" z_order="0">
+    </points>
+    <points label="B10" source="manual" occluded="0" points="1156.26,194.33" z_order="0">
+    </points>
+  </image>
+</annotations>
