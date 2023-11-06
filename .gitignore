@@ -3,3 +3,4 @@ __pycache__/
 *.jpg
 *.lock
 Pipfile
+background_image.png
