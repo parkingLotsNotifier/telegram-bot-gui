@@ -4,3 +4,4 @@ __pycache__/
 *.lock
 Pipfile
 background_image.png
+*.log
