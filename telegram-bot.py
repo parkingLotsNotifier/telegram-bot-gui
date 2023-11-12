@@ -18,6 +18,10 @@ from datetime import datetime
 import json
 import logging
 
+# for email sending
+import smtplib
+from email.mime.text import MIMEText
+
 
 load_dotenv()
 nest_asyncio.apply()
@@ -76,6 +80,14 @@ def start_socket_listener():
     asyncio.run(listen_for_updates())
 
 
+# Thread Safety:
+
+# Be cautious when using asyncio.run in a threaded environment.
+# In your start_socket_listener function, you're calling asyncio.run(listen_for_updates()) in a separate thread.
+# This could potentially lead to issues because asyncio.run is intended to be used in the main thread.
+# Consider using asyncio.create_task instead.
+
+
 # Create a new thread for the socket listener
 socket_listener_thread = threading.Thread(target=start_socket_listener)
 
@@ -89,9 +101,11 @@ async def send_image(update, context):
         chat_id = update.callback_query.message.chat_id
 
     # Create the InlineKeyboardButton for the START button
-    start_button = InlineKeyboardButton("START", callback_data="start")
-    # Create the InlineKeyboardMarkup with the START button
-    keyboard = InlineKeyboardMarkup([[start_button]])
+    start_button = InlineKeyboardButton("▶️ START", callback_data="start")
+    # Create the InlineKeyboardButton for the FEEDBACK button
+    feedback_button = InlineKeyboardButton("📣 FEEDBACK", callback_data="feedback")
+    # Create the InlineKeyboardMarkup with both buttons
+    keyboard = InlineKeyboardMarkup([[start_button, feedback_button]])
 
     try:
         with open("background_image.png", "rb") as image_file:
@@ -182,12 +196,103 @@ async def start_command(update, context):
     await start(update, context)
 
 
+# Define a function to handle the /feedback command
+async def feedback_command(update, context):
+    user_id = get_attribute(update, context, "user_id")
+    chat_id = get_attribute(update, context, "chat_id")
+
+    if not is_user_allowed(user_id):
+        await context.bot.send_message(
+            chat_id=chat_id, text="You are not authorized to use this bot."
+        )
+        return
+
+    # Send a message prompting the user for feedback
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text="Please type your feedback below. Your message will be sent to the admin.",
+    )
+
+    # Set a new state to track feedback messages
+    context.user_data["feedback_in_progress"] = True
+
+
+# Define a function to handle the /feedback button
+async def feedback_button(update, context):
+    await feedback_command(update, context)
+
+
+# Define a function to handle user feedback
+async def handle_feedback(update, context):
+    user_id = get_attribute(update, context, "user_id")
+    chat_id = get_attribute(update, context, "chat_id")
+
+    # Check if the user is allowed and if feedback is in progress
+    if not is_user_allowed(user_id) or not context.user_data.get(
+        "feedback_in_progress"
+    ):
+        return
+
+    # Get the user's feedback message
+    feedback_message = update.message.text
+
+    # You can implement the logic to send the feedback to your email here
+    # For simplicity, let's print it to the console
+    print(f"Received feedback from user {user_id}: {feedback_message}")
+
+    # Send feedback via email (modify this section)
+    send_feedback_email(feedback_message, user_id)
+
+    # Provide a confirmation to the user
+    await context.bot.send_message(
+        chat_id=chat_id, text="Thank you for your feedback! It has been submitted."
+    )
+
+    # Reset the feedback state
+    del context.user_data["feedback_in_progress"]
+
+
+# Function to send feedback via email
+def send_feedback_email(feedback_message, userID):
+    # Replace the following variables with your email and SMTP server details
+    sender_email = os.getenv("GMAIL_USERNAME")
+    app_password = os.getenv("TELEGRAM_BOT_GMAIL_PASSWORD")
+
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587
+
+    # Get recipient emails from environment variables
+    recipient_emails = [
+        # os.getenv("MAIL_DEST1"), # Co-founder E-mail
+        os.getenv("MAIL_DEST2"),
+    ]
+
+    # Create the email message
+    message_body = f"Feedback from Telegram Bot\n\nUser ID: {userID}\nFeedback Message:\n{feedback_message}"
+    message = MIMEText(message_body)
+    message["Subject"] = "Feedback from Telegram Bot"
+    message["From"] = sender_email
+    message["To"] = ", ".join(recipient_emails)
+
+    # Connect to the SMTP server and send the email
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        server.starttls()
+        server.login(sender_email, app_password)
+        server.sendmail(sender_email, recipient_emails, message.as_string())
+
+
 # Create an Application instance
 app = Application.builder().token(BOT_TOKEN).build()
 
 # Add your handlers to the application
 app.add_handler(CommandHandler("start", start_command))
 app.add_handler(CallbackQueryHandler(start_button_callback, pattern="^start$"))
+# Add the handler for the /feedback command
+app.add_handler(CommandHandler("feedback", feedback_command))
+# Add a new handler for the /feedback button
+app.add_handler(CallbackQueryHandler(feedback_button, pattern="^feedback$"))
+# Add a message handler to handle feedback messages
+app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_feedback))
 
 
 if __name__ == "__main__":
