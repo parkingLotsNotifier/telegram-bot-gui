@@ -61,13 +61,21 @@ telegram_handler.setFormatter(telegram_formatter)
 # Add the handler to the logger
 telegram_logger.addHandler(telegram_handler)
 
-
+user_logs = []
 # ---------------------------------------------------------------------------
 
 
 # Define a function to check if a user is allowed to use the bot
 def is_user_allowed(user_id):
     return user_id in ALLOWED_USER_IDS
+
+
+# returns a messege to unauthorized user access
+async def notAuthorizedMsg(context, chat_id):
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text="You are not authorized to use this bot.",
+    )
 
 
 async def listen_for_updates():
@@ -90,38 +98,6 @@ def start_socket_listener():
 
 # Create a new thread for the socket listener
 socket_listener_thread = threading.Thread(target=start_socket_listener)
-
-
-# Function to send the .jpg file
-async def send_image(update, context):
-    # Determine the chat ID
-    if update.message:
-        chat_id = update.message.chat_id
-    else:
-        chat_id = update.callback_query.message.chat_id
-
-    # Create the InlineKeyboardButton for the START button
-    start_button = InlineKeyboardButton("▶️ START", callback_data="start")
-    # Create the InlineKeyboardButton for the FEEDBACK button
-    feedback_button = InlineKeyboardButton("📣 FEEDBACK", callback_data="feedback")
-    # Create the InlineKeyboardMarkup with both buttons
-    keyboard = InlineKeyboardMarkup([[start_button, feedback_button]])
-
-    try:
-        with open("background_image.png", "rb") as image_file:
-            # Send the photo along with the START button
-            await context.bot.send_photo(
-                chat_id=chat_id, photo=image_file, reply_markup=keyboard
-            )
-    except FileNotFoundError:
-        await context.bot.send_message(
-            chat_id=chat_id,
-            text="The image file is not available.",
-            reply_markup=keyboard,
-        )
-
-
-user_logs = []
 
 
 # Function to add user logs
@@ -180,31 +156,41 @@ async def start(update, context):
         # The user is allowed; implement your bot's functionality here
         await send_image(update, context)
     else:
+        await notAuthorizedMsg(context, chat_id)
+
+
+# Function to send the .jpg file
+async def send_image(update, context):
+    # Determine the chat ID
+    chat_id = get_attribute(update, context, "chat_id")
+    # Create the InlineKeyboardButton for the START button
+    start_button = InlineKeyboardButton("▶️ START", callback_data="start")
+    # Create the InlineKeyboardButton for the FEEDBACK button
+    feedback_button = InlineKeyboardButton("📣 FEEDBACK", callback_data="feedback")
+    # Create the InlineKeyboardMarkup with both buttons
+    keyboard = InlineKeyboardMarkup([[start_button, feedback_button]])
+
+    try:
+        with open("background_image.png", "rb") as image_file:
+            # Send the photo along with the START button
+            await context.bot.send_photo(
+                chat_id=chat_id, photo=image_file, reply_markup=keyboard
+            )
+    except FileNotFoundError:
         await context.bot.send_message(
             chat_id=chat_id,
-            text="You are not authorized to use this bot.",
+            text="The image file is not available.",
+            reply_markup=keyboard,
         )
 
 
-# Define the callback query handler for the START button
-async def start_button_callback(update, context):
-    await start(update, context)  # Call send_image when the START button is pressed
-
-
-# Define a function for handling the /start command
-async def start_command(update, context):
-    await start(update, context)
-
-
-# Define a function to handle the /feedback command
-async def feedback_command(update, context):
+# Define a function that gets a feedback only if the user is allowed
+async def feedback(update, context):
     user_id = get_attribute(update, context, "user_id")
     chat_id = get_attribute(update, context, "chat_id")
 
     if not is_user_allowed(user_id):
-        await context.bot.send_message(
-            chat_id=chat_id, text="You are not authorized to use this bot."
-        )
+        await notAuthorizedMsg(context, chat_id)
         return
 
     # Send a message prompting the user for feedback
@@ -215,11 +201,6 @@ async def feedback_command(update, context):
 
     # Set a new state to track feedback messages
     context.user_data["feedback_in_progress"] = True
-
-
-# Define a function to handle the /feedback button
-async def feedback_button(update, context):
-    await feedback_command(update, context)
 
 
 # Define a function to handle user feedback
@@ -236,11 +217,10 @@ async def handle_feedback(update, context):
     # Get the user's feedback message
     feedback_message = update.message.text
 
-    # You can implement the logic to send the feedback to your email here
-    # For simplicity, let's print it to the console
+    # print it to the console
     print(f"Received feedback from user {user_id}: {feedback_message}")
 
-    # Send feedback via email (modify this section)
+    # Send feedback via email
     send_feedback_email(feedback_message, user_id)
 
     # Provide a confirmation to the user
@@ -263,7 +243,7 @@ def send_feedback_email(feedback_message, userID):
 
     # Get recipient emails from environment variables
     recipient_emails = [
-        # os.getenv("MAIL_DEST1"), # Co-founder E-mail
+        os.getenv("MAIL_DEST1"),  # Co-founder E-mail
         os.getenv("MAIL_DEST2"),
     ]
 
@@ -281,12 +261,33 @@ def send_feedback_email(feedback_message, userID):
         server.sendmail(sender_email, recipient_emails, message.as_string())
 
 
+# Define the callback query handler for the START button
+async def start_button_callback(update, context):
+    await start(update, context)  # Call send_image when the START button is pressed
+
+
+# Define a function for handling the /start command
+async def start_command(update, context):
+    await start(update, context)
+
+
+# Define a function to handle the /feedback command
+async def feedback_command(update, context):
+    await feedback(update, context)
+
+
+# Define a function to handle the /feedback button
+async def feedback_button(update, context):
+    await feedback(update, context)
+
+
 # Create an Application instance
 app = Application.builder().token(BOT_TOKEN).build()
 
 # Add your handlers to the application
 app.add_handler(CommandHandler("start", start_command))
 app.add_handler(CallbackQueryHandler(start_button_callback, pattern="^start$"))
+
 # Add the handler for the /feedback command
 app.add_handler(CommandHandler("feedback", feedback_command))
 # Add a new handler for the /feedback button
