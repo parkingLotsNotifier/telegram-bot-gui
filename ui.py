@@ -37,7 +37,7 @@ def generate_parking_lot_image(data):
   if "slots" in data:
       slots = data["slots"]
       for slot in slots:
-          lot_name = slot["lot_name"]
+          lotName = slot["lotName"]
           status = slot["prediction"]["class"]
           # Select the appropriate flashing light image based on the state
           if status == "occupied":
@@ -46,7 +46,7 @@ def generate_parking_lot_image(data):
            light_image = green_light
           
           # Get the corresponding light position using the label
-          light_pos = label_to_light_position[lot_name]
+          light_pos = label_to_light_position[lotName]
           # Calculate the center of the light image
           light_image_center = (light_image.width // 2, light_image.height // 2)
 
