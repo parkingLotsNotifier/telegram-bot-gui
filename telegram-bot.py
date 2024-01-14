@@ -29,9 +29,24 @@ nest_asyncio.apply()
 BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
 API_TOKEN = os.getenv("ACCESS_TOKEN_SECRET")
 USERS_IDS = os.getenv("ALLOWED_USER_IDS", "")
-
 # Get the allowed user IDs from the environment variable and convert them to a set of integers
 ALLOWED_USER_IDS = set(int(uid) for uid in USERS_IDS.split(","))
+
+# Get the environment variable containing the user ID to name map
+env_string = os.getenv("USER_ID_NAME_MAP")
+
+# Check if the environment variable is set
+if env_string is None:
+    print("Error: USER_ID_NAME_MAP environment variable is not set.")
+else:
+    try:
+        # Parse the JSON string into a Python dictionary
+        USER_ID_TO_NAME_MAP = json.loads(env_string)
+    except json.JSONDecodeError:
+        print(
+            "Error: Failed to decode USER_ID_NAME_MAP JSON. Check the format in the .env file."
+        )
+        USER_ID_TO_NAME_MAP = {}
 
 
 # Configure the logging module for user access logs
@@ -150,7 +165,10 @@ async def start(update, context):
     isUserAllowed = is_user_allowed(user_id)
 
     add_user_log(update, context, isUserAllowed)
-    print(f"{user_id}, Pressed: /start")
+    # Look up user name based on user ID
+    user_name = USER_ID_TO_NAME_MAP.get(str(user_id), "Unknown")
+
+    print(f"{user_name}, Pressed: /start")
 
     if isUserAllowed:
         # The user is allowed; implement your bot's functionality here
