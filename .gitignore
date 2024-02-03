@@ -5,4 +5,4 @@ __pycache__\
 Pipfile
 background_image.png
 *.log
-.venv\
+*.venv\
