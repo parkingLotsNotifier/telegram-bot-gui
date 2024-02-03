@@ -1,3 +1,4 @@
+venv\
 *.env
 __pycache__\
 *.jpg
@@ -5,4 +6,3 @@ __pycache__\
 Pipfile
 background_image.png
 *.log
-*.venv\
