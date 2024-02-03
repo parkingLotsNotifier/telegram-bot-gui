@@ -1,7 +1,8 @@
 *.env
-__pycache__/
+__pycache__\
 *.jpg
 *.lock
 Pipfile
 background_image.png
 *.log
+.venv\
