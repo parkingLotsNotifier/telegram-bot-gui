@@ -17,4 +17,4 @@ nest-asyncio = "*"
 
 [requires]
 python_version = "3.12"
-python_full_version = "3.12.0"
+python_full_version = "3.12.1"
