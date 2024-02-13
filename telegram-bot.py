@@ -235,9 +235,13 @@ async def handle_feedback(update, context):
     # Get the user's feedback message
     feedback_message = update.message.text
 
-    # print it to the console
-    print(f"Received feedback from user {user_id}: {feedback_message}")
+    # Look up user name based on user ID
+    user_name = USER_ID_TO_NAME_MAP.get(str(user_id), "Unknown")
 
+    # print it to the console
+    print(
+        f"Received feedback from user: {user_name}, ID number: {user_id}, feedback: {feedback_message}"
+    )
     # Send feedback via email
     send_feedback_email(feedback_message, user_id)
 
@@ -259,6 +263,8 @@ def send_feedback_email(feedback_message, userID):
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
 
+    # Look up user name based on user ID
+    user_name = USER_ID_TO_NAME_MAP.get(str(userID), "Unknown")
     # Get recipient emails from environment variables
     recipient_emails = [
         os.getenv("MAIL_DEST1"),  # Co-founder E-mail
@@ -266,7 +272,7 @@ def send_feedback_email(feedback_message, userID):
     ]
 
     # Create the email message
-    message_body = f"Feedback from Telegram Bot\n\nUser ID: {userID}\nFeedback Message:\n{feedback_message}"
+    message_body = f"Feedback from ParkerAI Bot\n\nUser Name: {user_name}\nUser ID: {userID}\nFeedback Message:\n{feedback_message}"
     message = MIMEText(message_body)
     message["Subject"] = "Feedback from Telegram Bot"
     message["From"] = sender_email
